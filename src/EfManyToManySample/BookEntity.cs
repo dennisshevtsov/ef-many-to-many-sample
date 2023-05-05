@@ -10,7 +10,8 @@ namespace EfManyToManySample
     /// <summary>Initializes a new instance of the <see cref="EfManyToManySample.BookEntity"/> class.</summary>
     public BookEntity()
     {
-      Title = string.Empty;
+      Title   = string.Empty;
+      Authors = new List<AuthorEntity>();
     }
 
     /// <summary>Gets/sets an object that represents an ID of a book.</summary>
@@ -18,5 +19,8 @@ namespace EfManyToManySample
 
     /// <summary>Gets/sets an object that represents a title of a book.</summary>
     public string Title { get; set; }
+
+    /// <summary>Gets/sets an object that represens a collection of authors of this book.</summary>
+    public ICollection<AuthorEntity> Authors { get; set; }
   }
 }
