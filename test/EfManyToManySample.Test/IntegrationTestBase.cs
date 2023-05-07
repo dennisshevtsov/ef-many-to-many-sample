@@ -8,7 +8,6 @@ namespace EfManyToManySample.Test
   using Microsoft.Extensions.Configuration;
   using Microsoft.Extensions.DependencyInjection;
 
-  [TestClass]
   public abstract class IntegrationTestBase
   {
 #pragma warning disable CS8618
@@ -23,12 +22,12 @@ namespace EfManyToManySample.Test
       var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
                                                     .Build();
 
-      var scope = new ServiceCollection().SetUpDatabase(configuration)
-                                         .BuildServiceProvider()
-                                         .CreateScope();
+      _scope = new ServiceCollection().SetUpDatabase(configuration)
+                                      .BuildServiceProvider()
+                                      .CreateScope();
 
-      DbContext = scope.ServiceProvider.GetRequiredService<DbContext>();
-      _scope = scope;
+      DbContext = _scope.ServiceProvider.GetRequiredService<DbContext>();
+      DbContext.Database.EnsureCreated();
     }
 
     [TestCleanup]
