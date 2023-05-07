@@ -5,6 +5,7 @@
 namespace EfManyToManySample.Test
 {
   using Microsoft.EntityFrameworkCore;
+  using Microsoft.Extensions.Configuration;
   using Microsoft.Extensions.DependencyInjection;
 
   [TestClass]
@@ -19,7 +20,10 @@ namespace EfManyToManySample.Test
     [TestInitialize]
     public void Initialize()
     {
-      var scope = new ServiceCollection().SetUpDatabase()
+      var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
+                                                    .Build();
+
+      var scope = new ServiceCollection().SetUpDatabase(configuration)
                                          .BuildServiceProvider()
                                          .CreateScope();
 
