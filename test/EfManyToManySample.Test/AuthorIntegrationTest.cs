@@ -67,7 +67,8 @@ namespace EfManyToManySample.Test
         controlAuthorEntity.Books.Add(bookEntity);
       }
 
-      var controlAuthorEntityEntry = DbContext.Add(controlAuthorEntity);
+      var controlAuthorEntityEntry = DbContext.Entry(controlAuthorEntity);
+      controlAuthorEntityEntry.State = EntityState.Added;
       await DbContext.SaveChangesAsync();
       controlAuthorEntityEntry.State = EntityState.Detached;
 
@@ -85,6 +86,50 @@ namespace EfManyToManySample.Test
       {
         Assert.IsTrue(actualAuthorEntity.Books.Any(entity => entity.BookId == bookEntity.BookId));
       }
+    }
+
+    [TestMethod]
+    public async Task SaveChangesAsync_DetachedBooksAddedToAuthor_BookAuthorRelationsNotSaved()
+    {
+      var controlBookEntityCollection = new List<BookEntity>
+      {
+        new BookEntity { Title = Guid.NewGuid().ToString() },
+        new BookEntity { Title = Guid.NewGuid().ToString() },
+        new BookEntity { Title = Guid.NewGuid().ToString() },
+      };
+
+      DbContext.AddRange(controlBookEntityCollection);
+      await DbContext.SaveChangesAsync();
+
+      foreach (var bookEntity in controlBookEntityCollection)
+      {
+        DbContext.Entry(bookEntity).State = EntityState.Detached;
+      }
+
+      var controlAuthorEntity = new AuthorEntity
+      {
+        Name = Guid.NewGuid().ToString(),
+      };
+
+      foreach (var bookEntity in controlBookEntityCollection)
+      {
+        controlAuthorEntity.Books.Add(bookEntity);
+      }
+
+      var controlAuthorEntityEntry = DbContext.Entry(controlAuthorEntity);
+      controlAuthorEntityEntry.State = EntityState.Added;
+      await DbContext.SaveChangesAsync();
+      controlAuthorEntityEntry.State = EntityState.Detached;
+
+      var actualAuthorEntity =
+        await DbContext.Set<AuthorEntity>()
+                       .AsNoTracking()
+                       .Include(entity => entity.Books)
+                       .Where(entity => entity.AuthorId == controlAuthorEntity.AuthorId)
+                       .SingleOrDefaultAsync();
+
+      Assert.IsNotNull(actualAuthorEntity);
+      Assert.AreEqual(0, actualAuthorEntity.Books.Count);
     }
   }
 }
