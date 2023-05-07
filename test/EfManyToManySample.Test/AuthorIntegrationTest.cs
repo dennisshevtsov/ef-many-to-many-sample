@@ -10,7 +10,7 @@ namespace EfManyToManySample.Test
   public sealed class AuthorIntegrationTest : IntegrationTestBase
   {
     [TestMethod]
-    public void Add_NewAuthor_NewAuthorIdGenerated()
+    public void Add_NewAuthor_AuthorIdGenerated()
     {
       var controlAuthorEntity = new AuthorEntity
       {
