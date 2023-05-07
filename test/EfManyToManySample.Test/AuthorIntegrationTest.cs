@@ -10,6 +10,19 @@ namespace EfManyToManySample.Test
   public sealed class AuthorIntegrationTest : IntegrationTestBase
   {
     [TestMethod]
+    public async Task SaveChangesAsync_NewAuthorAdded_NewAuthorIdGenerated()
+    {
+      var controlAuthorEntity = new AuthorEntity
+      {
+        Name = Guid.NewGuid().ToString(),
+      };
+
+      var controlAuthorEntityEntry = DbContext.Add(controlAuthorEntity);
+
+      Assert.AreNotEqual(default, controlAuthorEntity.AuthorId);
+    }
+
+    [TestMethod]
     public async Task SaveChangesAsync_NewAuthorAdded_NewAuthorSavedInDatabase()
     {
       var controlAuthorEntity = new AuthorEntity
