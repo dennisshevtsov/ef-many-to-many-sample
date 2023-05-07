@@ -23,7 +23,7 @@ namespace EfManyToManySample.Test
     }
 
     [TestMethod]
-    public async Task SaveChangesAsync_NewAuthorAdded_NewAuthorSavedInDatabase()
+    public async Task SaveChangesAsync_NewAuthorAdded_NewAuthorSaved()
     {
       var controlAuthorEntity = new AuthorEntity
       {
