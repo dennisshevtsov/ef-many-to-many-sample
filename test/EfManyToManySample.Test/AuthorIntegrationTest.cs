@@ -131,5 +131,75 @@ namespace EfManyToManySample.Test
       Assert.IsNotNull(actualAuthorEntity);
       Assert.AreEqual(0, actualAuthorEntity.Books.Count);
     }
+
+    [TestMethod]
+    public async Task SaveChangesAsync_BookAuthorsAddedToAuthor_BookAuthorRelationsSaved()
+    {
+      var controlBookEntityCollection = await AddDetachedBooksAsyns(3);
+      var controlAuthorEntity = await AddDetachedAuthorAsync();
+
+      var controlBookAuthorEntityCollection =
+        controlBookEntityCollection.Select(entity => new BookAuthorEntity(entity.BookId, controlAuthorEntity.AuthorId))
+                                   .ToList();
+
+      var controlAuthorEntityEntry = DbContext.Entry((object)controlAuthorEntity);
+      controlAuthorEntityEntry.State = EntityState.Unchanged;
+
+      var bookAuthorEntityCollectionNavigationEntry =
+        controlAuthorEntityEntry.Navigation(nameof(AuthorEntity.BookAuthors));
+
+      bookAuthorEntityCollectionNavigationEntry.CurrentValue = controlBookAuthorEntityCollection;
+      bookAuthorEntityCollectionNavigationEntry.IsModified = true;
+
+      await DbContext.SaveChangesAsync();
+
+      var actualAuthorEntity =
+        await DbContext.Set<AuthorEntity>()
+                       .AsNoTracking()
+                       .Include(entity => entity.Books)
+                       .Where(entity => entity.AuthorId == controlAuthorEntity.AuthorId)
+                       .SingleOrDefaultAsync();
+
+      Assert.IsNotNull(actualAuthorEntity);
+      Assert.AreEqual(controlBookEntityCollection.Count, actualAuthorEntity.Books.Count);
+    }
+
+    private async Task<List<BookEntity>> AddDetachedBooksAsyns(int books)
+    {
+      var controlBookEntityCollection = new List<BookEntity>();
+
+      for (int i = 0; i < books; i++)
+      {
+        controlBookEntityCollection.Add(new BookEntity
+        {
+          Title = Guid.NewGuid().ToString(),
+        });
+      }
+
+      DbContext.AddRange(controlBookEntityCollection);
+      await DbContext.SaveChangesAsync();
+
+      foreach (var bookEntity in controlBookEntityCollection)
+      {
+        DbContext.Entry(bookEntity).State = EntityState.Detached;
+      }
+
+      return controlBookEntityCollection;
+    }
+
+    private async Task<AuthorEntity> AddDetachedAuthorAsync()
+    {
+      var controlAuthorEntity = new AuthorEntity
+      {
+        Name = Guid.NewGuid().ToString(),
+      };
+
+      var controlAuthorEntityEntry = DbContext.Entry(controlAuthorEntity);
+      controlAuthorEntityEntry.State = EntityState.Added;
+      await DbContext.SaveChangesAsync();
+      controlAuthorEntityEntry.State = EntityState.Detached;
+
+      return controlAuthorEntity;
+    }
   }
 }

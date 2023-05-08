@@ -7,6 +7,18 @@ namespace EfManyToManySample
   /// <summary>Represents a relation between books and authors.</summary>
   public sealed class BookAuthorEntity
   {
+    /// <summary>Initializes a new instance of the <see cref="EfManyToManySample.BookAuthorEntity"/> class.</summary>
+    public BookAuthorEntity() { }
+
+    /// <summary>Initializes a new instance of the <see cref="EfManyToManySample.BookAuthorEntity"/> class.</summary>
+    /// <param name="bookId">An object that represents an ID of a book.</param>
+    /// <param name="authorId">An object that represents an ID of author.</param>
+    public BookAuthorEntity(Guid bookId, Guid authorId)
+    {
+      BookId   = bookId;
+      AuthorId = authorId;
+    }
+
     /// <summary>Gets/sets an object that represents an ID of a book.</summary>
     public Guid BookId { get; set; }
 
