@@ -40,7 +40,17 @@ namespace EfManyToManySample
                builder => builder.HasOne(entity => entity.Author)
                                  .WithMany()
                                  .HasForeignKey(entity => entity.AuthorId)
-                                 .HasPrincipalKey(entity => entity.AuthorId)
+                                 .HasPrincipalKey(entity => entity.AuthorId),
+               builder =>
+               {
+                 builder.Property(entity => entity.AuthorId)
+                        .HasColumnName("author_id")
+                        .IsRequired();
+
+                 builder.Property(entity => entity.BookId)
+                        .HasColumnName("book_id")
+                        .IsRequired();
+               }
              );
     }
   }
