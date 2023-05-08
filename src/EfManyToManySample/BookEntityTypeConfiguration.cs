@@ -28,20 +28,6 @@ namespace EfManyToManySample
              .HasColumnName("title")
              .IsRequired()
              .HasMaxLength(256);
-
-      builder.HasMany(entity => entity.Authors)
-             .WithMany(entity => entity.Books)
-             .UsingEntity<BookAuthorEntity>(
-               "book_author",
-               builder => builder.HasOne(entity => entity.Author)
-                                 .WithMany()
-                                 .HasForeignKey(entity => entity.AuthorId)
-                                 .HasPrincipalKey(entity => entity.AuthorId),
-               builder => builder.HasOne(entity => entity.Book)
-                                 .WithMany()
-                                 .HasForeignKey(entity => entity.BookId)
-                                 .HasPrincipalKey(entity => entity.BookId)
-             );
     }
   }
 }

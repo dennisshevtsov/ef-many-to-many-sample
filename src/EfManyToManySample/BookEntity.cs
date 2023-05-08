@@ -22,5 +22,8 @@ namespace EfManyToManySample
 
     /// <summary>Gets/sets an object that represens a collection of authors of this book.</summary>
     public ICollection<AuthorEntity> Authors { get; set; }
+
+    /// <summary>Gets/sets an object that represents a collection of relations between authors and this book.</summary>
+    public ICollection<BookAuthorEntity> BookAuthors { get; set; }
   }
 }
